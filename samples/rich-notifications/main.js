@@ -47,16 +47,26 @@ var notOptions = [
 		title: "Progress Notification",
 		message: "Short message plus an image",
 		progress: 60
-	}
-	
+	},
+        {
+            type: "list",
+            title: "Primary Title",
+            message: "Primary message to display",
+            iconUrl: "64.png",
+            items: [{ title: "Item1", message: "This is item 1."},
+                    { title: "Item2", message: "This is item 2."},
+                    { title: "Item3", message: "This is item 3."}]
+        }
 ];
 
 // Window initialization code. Set up the various event handlers
 window.addEventListener("load", function() {
 	document.getElementById("basic").addEventListener("click", doNotify);
 	document.getElementById("image").addEventListener("click", doNotify);
-	document.getElementById("list").addEventListener("click", doNotify);
-	document.getElementById("progress").addEventListener("click", doNotify);
+        document.getElementById("list").addEventListener("click", doNotify);
+        document.getElementById("progress").addEventListener("click", doNotify);
+        document.getElementById("showProgress").addEventListener("click", doUpdate);
+        document.getElementById("test").addEventListener("click", doNotify);
 
 	// set up the event listeners
 	chrome.notifications.onClosed.addListener(notificationClosed);
@@ -83,6 +93,9 @@ function doNotify(evt) {
 	}
 	else if (evt.srcElement.id == "progress") {
 		options = notOptions[3];
+	}
+    else if (evt.srcElement.id == "test") {
+                options = notOptions[4];
 	}
 
 	options.iconUrl = path;
@@ -117,9 +130,17 @@ function notificationClosed(notID, bByUser) {
 }
 
 function notificationClicked(notID) {
-	console.log("The notification '" + notID + "' was clicked");
+    console.log("The notification '" + notID + "' was clicked");
 }
 
 function notificationBtnClick(notID, iBtn) {
 	console.log("The notification '" + notID + "' had button " + iBtn + " clicked");
+}
+
+function doUpdate() {
+    var id = notID -1;
+    console.log("Pogressing..." + "id"+id);
+    notOptions[3].progress += 5;
+    notOptions[3].progress = notOptions[3].progress % 100;
+    chrome.notifications.update("id"+id, notOptions[3], creationCallback);
 }
